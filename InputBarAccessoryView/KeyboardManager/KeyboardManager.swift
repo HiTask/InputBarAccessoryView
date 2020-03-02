@@ -38,6 +38,9 @@ open class KeyboardManager: NSObject, UIGestureRecognizerDelegate {
     /// A weak reference to a view bounded to the top of the keyboard to act as an `InputAccessoryView`
     /// but kept within the bounds of the `UIViewController`s view
     open weak var inputAccessoryView: UIView?
+	
+	/// A flag that indicates if messageInputBar is shown inside our custom VC (not as inputAccessoryView).
+	public var shownInsideVC: Bool = false
     
     /// A flag that indicates if a portion of the keyboard is visible on the screen
     private(set) public var isKeyboardHidden: Bool = true
@@ -158,6 +161,11 @@ open class KeyboardManager: NSObject, UIGestureRecognizerDelegate {
                 notification.isForCurrentApp else { return }
             self?.animateAlongside(notification) {
                 self?.constraints?.bottom?.constant = -keyboardHeight
+				if (self?.shownInsideVC ?? false) {
+					if #available(iOS 11.0, *) {
+						self?.constraints?.bottom?.constant += UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+					}
+				}
                 self?.inputAccessoryView?.superview?.layoutIfNeeded()
             }
         }
@@ -168,6 +176,11 @@ open class KeyboardManager: NSObject, UIGestureRecognizerDelegate {
                 notification.isForCurrentApp else { return }
             self?.animateAlongside(notification) {
                 self?.constraints?.bottom?.constant = -keyboardHeight
+				if (self?.shownInsideVC ?? false) {
+					if #available(iOS 11.0, *) {
+						self?.constraints?.bottom?.constant += UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+					}
+				}
                 self?.inputAccessoryView?.superview?.layoutIfNeeded()
             }
         }
